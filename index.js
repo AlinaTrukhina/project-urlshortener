@@ -33,14 +33,19 @@ let urls = [];
 app.post('/api/shorturl', (req, res, next) => {
 
   const origUrl = req.body.url;
-  const shortUrl = urls.length.toString();
-  urls.push({origUrl: origUrl})
+  console.log(dns.lookup(urlparser.parse(origUrl).hostname, (error, address) => {
+    if (!address) {
+      res.json({error: "Invalid URL"});
+    } else {
+      const shortUrl = urls.length.toString();
+      urls.push({origUrl: origUrl})
 
-  res.json({
-    original_url: origUrl,
-    short_url: shortUrl
-  });
-  // }
+      res.json({
+        original_url: origUrl,
+        short_url: shortUrl
+      });
+    }
+  }));
 })
 
 app.get('/api/shorturl/:id', (req, res) => {
